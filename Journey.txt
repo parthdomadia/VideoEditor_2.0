@@ -1,0 +1,45 @@
+### 31-10-2022
+
+- List out all the video paths
+- Identify where/when to make a cut in the video
+    - ML model to recognize
+    - since the region where the kill animation is show is constant, we can directly try to compare that and identify the cuts to be made
+    - keep the kill feed ( top right corner ) as the ROI and read names from there, whenever it matches one of the words in the pre defined list, we make the cut
+- use transitions to merge the clips
+- identify how much before and after the cut is to be included in the clip
+- explore how the current deployed platforms/softwares do it
+
+### 01-02-2022
+
+- Test if the crop image matches the one from the original image
+    - Compare the crop image, with the original image
+    - this confirms that the vectorization of the RGB values works
+- Once we know that the vectorization works, we can try out the method on various clips and see of we can detect the kills
+- Have the meta-data ready, about how many kills are there in every clip
+
+**Issues faced :**
+
+- while comparing crops we are not getting the expected results since the actual kill banner takes up less real estate in terms of pixels, so even if we have the same kill banner, the negative area pixel colors vary a lot
+- Due to this we wont be able to detect the kills solely on the basis of the kill banner
+- For example :
+    - The difference between these two is ~0.2
+        
+        ![test_crop.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/d9a09cf4-6a68-4ba1-b582-051145953bdf/test_crop.png)
+        
+        ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b86b8672-1d6e-4927-8d5f-4f5189d71f8c/Untitled.png)
+        
+    - And the difference between these two is ~0.3
+        
+        ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4f92b1ff-df4b-4d03-af7a-e368fc0e751d/Untitled.png)
+        
+        ![test_crop.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/d9a09cf4-6a68-4ba1-b582-051145953bdf/test_crop.png)
+        
+
+### 05-02-2022
+
+- Since we faced issue with comparing each pixel, we tried using cosine similarity to compare the frames  (crop of the frames)
+    - Result : it works, although the cuts that are made are exactly the instant we get the kills in the video ( this is expected behavior )
+- We need to make sure we add extra footage before the kills to add context to the final compilation of the kills ( this was already implemented in the version 1.0 of the video editor )
+- As of now we will go ahead with the cosine comparison
+    - although we need to define the threshold of similarity to create a cut
+- Also we need to make sure we purge the `frames` folder for every new video, since we will be taking up a lot of space while breaking a video into frames
